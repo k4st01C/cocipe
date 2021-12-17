@@ -1,5 +1,6 @@
 'use strict';
 import { API_URL } from './config.js';
+import { RESULTS_PER_PAGE } from './config.js';
 import { getJson } from './helpers.js';
 
 export const state = {
@@ -7,6 +8,8 @@ export const state = {
 	search: {
 		query: {},
 		recipes: [],
+		page: 1,
+		resultsPerPage: RESULTS_PER_PAGE,
 	},
 };
 
@@ -33,6 +36,7 @@ export async function loadSearchResults(query) {
 	try {
 		const data = await getJson(`${API_URL}?search=${query}`);
 		const { recipes } = data.data;
+		if (!recipes[0]) throw new Error('No results!');
 		state.search.query = query;
 		state.search.recipes = recipes.map(recipe => {
 			return {
@@ -42,8 +46,12 @@ export async function loadSearchResults(query) {
 				title: recipe.title,
 			};
 		});
-		console.log(state);
 	} catch (error) {
 		throw error;
 	}
+}
+
+export function getResultsPerPage(page = 1) {
+	state.search.page = page;
+	return state.search.recipes.slice((page - 1) * RESULTS_PER_PAGE, page * RESULTS_PER_PAGE);
 }

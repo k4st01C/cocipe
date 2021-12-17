@@ -1,22 +1,20 @@
 'use strict';
+import icons from 'url:../../img/icons.svg';
 
 export default class View {
-    #errorMessage;
-	#data;
-	#parentEl = document.querySelector('.recipe');
-	#successMessage;
+	_data;
 	render(data) {
-		this.#data = data;
-		this.#clear();
-		this.#parentEl.insertAdjacentHTML('afterbegin', this.#generateMarkup());
+		this._data = data;
+		this._clear();
+		this._parentEl.insertAdjacentHTML('afterbegin', this._generateMarkup());
 	}
 
-	#clear() {
-		this.#parentEl.innerHTML = '';
+	_clear() {
+		this._parentEl.innerHTML = '';
 	}
 
 	renderSpinner() {
-		this.#clear();
+		this._clear();
 		const markup = `
         <div class="spinner">
           <svg>
@@ -24,32 +22,26 @@ export default class View {
           </svg>
         </div>
         `;
-		this.#parentEl.insertAdjacentHTML('afterbegin', markup);
+		this._parentEl.insertAdjacentHTML('afterbegin', markup);
 	}
 
-	
-
-	addHandlerRender(handler) {
-		['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
-	}
-
-	renderError(err = this.#errorMessage) {
-		this.#clear();
+	renderError(err = this._errorMessage) {
+		this._clear();
 		const markup = `
 		<div class="error">
-      <div>
-				<svg>
-					<use href='${icons}#icon-alert-triangle'></use>
-				</svg>
-				<p>${err}</p>
+      		<div>
+			<svg>
+				<use href='${icons}#icon-alert-triangle'></use>
+			</svg>
+			<p>${err}</p>
 			</div>
 		</div>;
         `;
-		this.#parentEl.insertAdjacentHTML('afterbegin', markup);
+		this._parentEl.insertAdjacentHTML('afterbegin', markup);
 	}
 
-	renderMessage(message = this.#successMessage) {
-		this.#clear();
+	renderMessage(message = this._successMessage) {
+		this._clear();
 		const markup = `
 		<div class="message">
         <div>
@@ -60,7 +52,6 @@ export default class View {
         <p>${message}</p>
     </div>
         `;
-		this.#parentEl.insertAdjacentHTML('afterbegin', markup);
+		this._parentEl.insertAdjacentHTML('afterbegin', markup);
 	}
-}
 }

@@ -1,29 +1,27 @@
 'use strict';
+import View from './view.js';
+import icons from 'url:../../img/icons.svg';
 
-class resultsView {
-	#parentEl = document.querySelector('.results');
-	#data;
-	render() {
-		this.#data = data;
-		this.#parentEl.insertAdjacentHTML('afterbegin', this.generateMarkup());
-	}
-	generateMarkup() {
-		<li class='preview'>
-			<a class='preview__link preview__link--active' href='#23456'>
+class ResultsView extends View {
+	_parentEl = document.querySelector('.results');
+	_errorMessage = 'No results found!';
+	_successMessage;
+
+	_generateMarkup() {
+		return this._data.reduce((ac, e) => {
+			ac += `<li class='preview'>
+			<a class='preview__link' href='#${e.id}'>
 				<figure class='preview__fig'>
-					<img src='src/img/test-1.jpg' alt='Test' />
+					<img src=${e.image} alt=${e.title} />
 				</figure>
 				<div class='preview__data'>
-					<h4 class='preview__title'>Pasta with Tomato Cream ...</h4>
-					<p class='preview__publisher'>The Pioneer Woman</p>
-					<div class='preview__user-generated'>
-						<svg>
-							<use href='src/img/icons.svg#icon-user'></use>
-						</svg>
-					</div>
+					<h4 class='preview__title'>${e.title}</h4>
+					<p class='preview__publisher'>${e.publisher}</p>
 				</div>
 			</a>
-		</li>;
+		</li>;`;
+			return ac;
+		}, ``);
 	}
 }
 
