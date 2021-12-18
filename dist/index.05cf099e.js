@@ -505,8 +505,15 @@ function controlPagination(gotoPage) {
     _resultsJsDefault.default.render(_modelJs.getResultsPerPage(gotoPage));
     _paginationViewJsDefault.default.render(_modelJs.state.search);
 }
+function controlServings(newServings) {
+    //update model state
+    _modelJs.updateServings(newServings);
+    //update DOM view
+    _recipeViewJsDefault.default.update(_modelJs.state.recipe);
+}
 (function init() {
     _recipeViewJsDefault.default.addHandlerRender(controlRecipes);
+    _recipeViewJsDefault.default.addHandlerUpdateServings(controlServings);
     _searchViewJsDefault.default.addHandlerSearch(controlSearchResults);
     _paginationViewJsDefault.default.addHandlerPagination(controlPagination);
 })();
@@ -13681,6 +13688,8 @@ parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe
 );
 parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults
 );
+parcelHelpers.export(exports, "updateServings", ()=>updateServings
+);
 parcelHelpers.export(exports, "getResultsPerPage", ()=>getResultsPerPage
 );
 var _configJs = require("./config.js");
@@ -13732,6 +13741,12 @@ async function loadSearchResults(query) {
     } catch (error) {
         throw error;
     }
+}
+function updateServings(newServings) {
+    const curServing = state.recipe.servings;
+    state.recipe.ingredients.forEach((ing)=>ing.quantity = ing.quantity / curServing * newServings
+    );
+    state.recipe.servings = newServings;
 }
 function getResultsPerPage(page = 1) {
     state.search.page = page;
@@ -13818,12 +13833,12 @@ class RecipeView extends _viewJsDefault.default {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--increase-servings" data-update-to="${this._data.servings - 1}">
                 <svg>
                   <use href="${_iconsSvgDefault.default}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--increase-servings" data-update-to="${this._data.servings + 1}">
                 <svg>
                   <use href="${_iconsSvgDefault.default}#icon-plus-circle"></use>
                 </svg>
@@ -13891,6 +13906,14 @@ class RecipeView extends _viewJsDefault.default {
         ].forEach((e)=>window.addEventListener(e, handler)
         );
     }
+    addHandlerUpdateServings(handler1) {
+        this._parentEl.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn--increase-servings');
+            if (!btn) return;
+            let updateTo = +btn.dataset.updateTo;
+            if (updateTo > 0 && updateTo < 11) handler1(+btn.dataset.updateTo);
+        });
+    }
 }
 exports.default = new RecipeView();
 
@@ -13941,9 +13964,28 @@ var _iconsSvgDefault = parcelHelpers.interopDefault(_iconsSvg);
 class View {
     _data;
     render(data) {
+        if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
         this._data = data;
         this._clear();
         this._parentEl.insertAdjacentHTML('afterbegin', this._generateMarkup());
+    }
+    update(data1) {
+        if (!data1 || Array.isArray(data1) && data1.length === 0) return this.renderError();
+        this._data = data1;
+        const newMarkup = this._generateMarkup();
+        //convert markup to virtualDom
+        const newDom = document.createRange().createContextualFragment(newMarkup);
+        //convert new Dom and current Dom to Arrays
+        const newElements = Array.from(newDom.querySelectorAll('*'));
+        const curElements = Array.from(this._parentEl.querySelectorAll('*'));
+        //compare Arrays
+        newElements.forEach((e, i)=>{
+            //change text
+            if (!e.isEqualNode(curElements[i]) && e.firstChild?.nodeValue.trim() !== '') curElements[i].textContent = e.textContent;
+            //change attributes
+            if (!e.isEqualNode(curElements[i])) Array.from(e.attributes).forEach((attr)=>curElements[i].setAttribute(attr.name, attr.value)
+            );
+        });
     }
     _clear() {
         this._parentEl.innerHTML = '';
