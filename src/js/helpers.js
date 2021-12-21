@@ -1,7 +1,7 @@
 'use strict';
 import { TIMEOUT_SEC } from './config.js';
 
-export const timeout = function (s) {
+const timeout = function (s) {
 	return new Promise(function (_, reject) {
 		setTimeout(function () {
 			reject(new Error(`Request took too long! Timeout after ${s} second`));
@@ -9,13 +9,17 @@ export const timeout = function (s) {
 	});
 };
 
-export async function getJson(url) {
-	try {
-		const res = await Promise.race([fetch(url), timeout(TIMEOUT_SEC)]);
-		const data = await res.json();
-		if (!res.ok) throw new Error(`${data.message}, ${res.status}`);
-		return data;
-	} catch (error) {
-		throw error;
-	}
+export async function AJAX(url, uploadData = undefined) {
+	const fetchPro = uploadData
+		? fetch(url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(uploadData),
+		  })
+		: fetch(url);
+
+	const res = await Promise.race([fetchPro, timeout(TIMEOUT_SEC)]);
+	const data = await res.json();
+	if (!res.ok) throw new Error(`${data.message}, ${res.status}`);
+	return data;
 }
