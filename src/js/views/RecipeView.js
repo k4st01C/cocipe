@@ -1,13 +1,11 @@
-'use strict';
-import icons from 'url:../../img/icons.svg';
-import View from './view.js';
 import { Fraction } from 'fractional';
+import View from './view.js';
+import icons from 'url:../../img/icons.svg';
 
 class RecipeView extends View {
 	_errorMessage = 'We could not find the recipe. Please try another one!';
 	_parentEl = document.querySelector('.recipe');
-	_successMessage;
-
+	_message = 'Use Search';
 	_generateMarkup() {
 		return `
         <figure class="recipe__fig">
@@ -64,7 +62,7 @@ class RecipeView extends View {
         <div class="recipe__ingredients">
           <h2 class="heading--2">Recipe ingredients</h2>
           <ul class="recipe__ingredient-list">
-          ${this._generateMarkupIngredients(this._data.ingredients)}
+          ${this._data.ingredients.map(e => this._generateMarkupIngredient(e)).join('')}
 
           </ul>
         </div>
@@ -89,23 +87,21 @@ class RecipeView extends View {
         </div>`;
 	}
 
-	_generateMarkupIngredients(ingredients) {
-		return ingredients.reduce((ac, e) => {
-			ac += `
-            <li class="recipe__ingredient">
+	_generateMarkupIngredient(ing) {
+		return `
+        <li class="recipe__ingredient">
               <svg class="recipe__icon">
                 <use href="${icons}#icon-check"></use>
               </svg>
-              <div class="recipe__quantity">${
-								e.quantity ? new Fraction(e.quantity).toString() : ''
-							}</div>
+              <div class="recipe__quantity">
+              ${ing.quantity ? new Fraction(ing.quantity).toString() : ''}
+                </div>
               <div class="recipe__description">
-                <span class="recipe__unit">${e.unit}</span>
-                ${e.description}
+                <span class="recipe__unit">${ing.unit}</span>
+                ${ing.description}
               </div>
-            </li>`;
-			return ac;
-		}, '');
+            </li>
+            `;
 	}
 
 	addHandlerRender(handler) {
