@@ -8,7 +8,7 @@ import recipeView from './views/RecipeView.js';
 import searchView from './views/searchView.js';
 import results from './views/results.js';
 import paginationView from './views/paginationView.js';
-import bookmarksView from './views/bookmarksView.js';
+import bookmarksView from './views/bookmarksview.js';
 import addRecipeView from './views/addRecipeView.js';
 
 //
