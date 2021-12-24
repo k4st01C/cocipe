@@ -11,6 +11,7 @@ import paginationView from './views/paginationView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
 
+//
 // Check if HMR interface is enabled
 //rebuild without page reload in browser
 if (module.hot) {
