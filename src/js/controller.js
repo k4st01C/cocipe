@@ -4,7 +4,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { MODAL_CLOSE_SEC } from './config.js';
 import * as model from './model.js';
-import recipeView from './views/recipeView.js';
+import recipeView from './views/RecipeView.js';
 import searchView from './views/searchView.js';
 import results from './views/results.js';
 import paginationView from './views/paginationView.js';
